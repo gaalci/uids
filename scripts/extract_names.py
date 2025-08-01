@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import os, json, string
 
-USERS_DIR = "users"
+SNOW_DIR  = "snow"
 OUT_DIR   = "indexes"
 
 def load_users(path):
+    """Return a list of (name, uid) tuples from snow/*.json."""
     pairs = []
     for fname in os.listdir(path):
         if not fname.lower().endswith(".json"):
@@ -23,6 +24,7 @@ def load_users(path):
     return pairs
 
 def bucket_by_letter(pairs):
+    """Return dict: { 'A': {name:uid,...}, ..., 'Z': {...} }"""
     buckets = {L: {} for L in string.ascii_uppercase}
     for name, uid in pairs:
         first = name[0].upper()
@@ -40,6 +42,6 @@ def write_indexes(buckets):
     print(f"Wrote {len(buckets)} index files into ‘{OUT_DIR}/’")
 
 if __name__ == "__main__":
-    pairs   = load_users(USERS_DIR)
+    pairs   = load_users(SNOW_DIR)
     buckets = bucket_by_letter(pairs)
     write_indexes(buckets)
