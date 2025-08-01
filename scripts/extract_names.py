@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os, json, string
 
-SNOW_DIR  = "snow"
-OUT_DIR   = "indexes"
+SNOW_DIR  = "../snow"  # Go up one level from scripts/ to find snow/
+OUT_DIR   = "../indexes"  # Go up one level from scripts/ to put indexes/ in root
 
 def load_users(path):
     """Return a list of (name, uid) tuples from snow/*.json."""
