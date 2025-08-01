@@ -1,10 +1,10 @@
 name: Build Name–UID Index
 
-# Trigger on any push to users/*.json, and every 5 minutes
+# Trigger on any push to snow/*.json, and every 5 minutes
 on:
   push:
     paths:
-      - 'users/*.json'
+      - 'snow/*.json'
   schedule:
     - cron: '*/5 * * * *'   # GitHub Actions minimum schedule is 5 minutes
   workflow_dispatch:       # Allows manual “Run workflow” from the Actions tab
