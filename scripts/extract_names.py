@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 import os, json, string
 
-SNOW_DIR  = "../snow"  # Go up one level from scripts/ to find snow/
-OUT_DIR   = "../indexes"  # Go up one level from scripts/ to put indexes/ in root
+SNOW_DIR  = "snow"    # snow/ is at repo root level
+OUT_DIR   = "indexes" # indexes/ should be created at repo root level
 
 def load_users(path):
     """Return a list of (name, uid) tuples from snow/*.json."""
     pairs = []
-    for fname in os.listdir(path):
+    if not os.path.exists(path):
+        print(f"Directory {path} does not exist!")
+        return pairs
+    
+    files = os.listdir(path)
+    print(f"Found {len(files)} files in {path}")
+    
+    for fname in files:
         if not fname.lower().endswith(".json"):
             continue
         uid = fname[:-5]  # strip ".json"
@@ -18,9 +25,11 @@ def load_users(path):
             name = data.get("name", "").strip()
             if name:
                 pairs.append((name, uid))
-        except Exception:
-            # skip invalid or non-JSON files
+        except Exception as e:
+            print(f"Error processing {fname}: {e}")
             continue
+    
+    print(f"Loaded {len(pairs)} name-uid pairs")
     return pairs
 
 def bucket_by_letter(pairs):
@@ -39,7 +48,7 @@ def write_indexes(buckets):
         # Always overwrite so indexes stay in sync with source data
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(mapping, f, ensure_ascii=False, indent=2)
-    print(f"Wrote {len(buckets)} index files into ‘{OUT_DIR}/’")
+    print(f"Wrote {len(buckets)} index files into '{OUT_DIR}/'")
 
 if __name__ == "__main__":
     pairs   = load_users(SNOW_DIR)
