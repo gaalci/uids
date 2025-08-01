@@ -8,6 +8,7 @@ on:
 jobs:
   index:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,11 +20,12 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Extract names & write JSON indexes
-        run: python scripts/extract_names.py
+      - name: Run extraction script
+        run: |
+          python scripts/extract_names.py
 
       - name: Commit index files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: chore: update Name-UID JSON indexes
-          file_pattern: indexes/*.json
+          commit_message: "chore: update Name-UID JSON indexes"
+          file_pattern: "indexes/*.json"
