@@ -1,9 +1,9 @@
 name: Build Name-UID Index
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
+  repository_dispatch:
+    types: [update-index]
 
 jobs:
   index:
