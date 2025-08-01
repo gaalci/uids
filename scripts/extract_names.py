@@ -43,12 +43,16 @@ def bucket_by_letter(pairs):
 
 def write_indexes(buckets):
     os.makedirs(OUT_DIR, exist_ok=True)
-    for letter, mapping in buckets.items():
+    
+    # Always write ALL A-Z files, even if empty
+    for letter in string.ascii_uppercase:
+        mapping = buckets.get(letter, {})  # Use empty dict if no names for this letter
         out_path = os.path.join(OUT_DIR, f"{letter}.json")
         # Always overwrite so indexes stay in sync with source data
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(mapping, f, ensure_ascii=False, indent=2)
-    print(f"Wrote {len(buckets)} index files into '{OUT_DIR}/'")
+    
+    print(f"Wrote all 26 index files (A-Z) into '{OUT_DIR}/'")
 
 if __name__ == "__main__":
     pairs   = load_users(SNOW_DIR)
