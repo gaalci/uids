@@ -1,36 +1,29 @@
-# .github/workflows/index-names.yml
-name: Build Name–UID Index
+name: Build Name-UID Index
 
-# ONLY scheduled runs at GitHub’s 5-minute minimum interval
 on:
   schedule:
-    - cron: '*/5 * * * *'   # every 5 minutes
-  workflow_dispatch:       # optional: run manually from the Actions tab
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   index:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Check out your repo (full history so we can commit back)
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. Install Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      # 3. Run the extraction script
       - name: Extract names & write JSON indexes
         run: python scripts/extract_names.py
 
-      # 4. Auto-commit any changed index files
       - name: Commit index files
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: chore: update Name–UID JSON indexes
+          commit_message: chore: update Name-UID JSON indexes
           file_pattern: indexes/*.json
