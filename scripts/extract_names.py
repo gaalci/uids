@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+import os, json, string
+
+SNOW_DIR  = "snow"    # snow/ is at repo root level
+OUT_DIR   = "indexes" # indexes/ should be created at repo root level
+
+def load_users(path):
+    """Return a list of (name, uid) tuples from snow/*.json."""
+    pairs = []
+    if not os.path.exists(path):
+        print(f"Directory {path} does not exist!")
+        return pairs
+    
+    files = os.listdir(path)
+    print(f"Found {len(files)} files in {path}")
+    
+    for fname in files:
+        if not fname.lower().endswith(".json"):
+            continue
+        uid = fname[:-5]  # strip ".json"
+        full = os.path.join(path, fname)
+        try:
+            with open(full, encoding="utf-8") as f:
+                data = json.load(f)
+            name = data.get("name", "").strip()
+            if name:
+                pairs.append((name, uid))
+        except Exception as e:
+            print(f"Error processing {fname}: {e}")
+            continue
+    
+    print(f"Loaded {len(pairs)} name-uid pairs")
+    return pairs
+
+def bucket_by_letter(pairs):
+    """Return dict: { 'A': {name:uid,...}, ..., 'Z': {...} }"""
+    buckets = {L: {} for L in string.ascii_uppercase}
+    for name, uid in pairs:
+        first = name[0].upper()
+        if first in buckets:
+            buckets[first][name] = uid
+    return buckets
+
+def write_indexes(buckets):
+    os.makedirs(OUT_DIR, exist_ok=True)
+    
+    # Always write ALL A-Z files, even if empty
+    for letter in string.ascii_uppercase:
+        mapping = buckets.get(letter, {})  # Use empty dict if no names for this letter
+        out_path = os.path.join(OUT_DIR, f"{letter}.json")
+        # Always overwrite so indexes stay in sync with source data
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(mapping, f, ensure_ascii=False, indent=2)
+    
+    print(f"Wrote all 26 index files (A-Z) into '{OUT_DIR}/'")
+
+if __name__ == "__main__":
+    pairs   = load_users(SNOW_DIR)
+    buckets = bucket_by_letter(pairs)
+    write_indexes(buckets)
