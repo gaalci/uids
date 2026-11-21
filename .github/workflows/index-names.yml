@@ -1,0 +1,39 @@
+name: Build Name-UID Index
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [update-index]
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run extraction script
+        run: |
+          python scripts/extract_names.py
+
+      - name: Reset repo history and commit index files
+        run: |
+          git checkout --orphan latest
+          git add indexes/*.json popular/tag.json
+          git commit -m "chore: update Name-UID JSON indexes and popular tags"
+          git branch -M main
+          git push -f origin main
